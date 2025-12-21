@@ -1,12 +1,19 @@
 import Link from "next/link";
 import styles from "./Notes.module.css";
+import CreateNote from "./CreateNote";
+import PocketBase from "pocketbase";
+
+export const dynamic = "auto",
+    dynamicParams = true,
+    revalidate = 0,
+    fetchCache = "force-no-store",
+    runtime = "nodejs",
+    preferredRegion = "auto";
 
 async function getNotes() {
-    const res = await fetch("http://127.0.0.1:8090/api/collections/notes/records?page=1&perPage=30", {
-        cache: "no-store",
-    });
-    const data = await res.json();
-    return data?.items as any[];
+    const db = new PocketBase("http://127.0.0.1:8090");
+    const result = await db.collection("notes").getList();
+    return result?.items as any[];
 }
 
 export default async function NotesPage() {
@@ -20,6 +27,8 @@ export default async function NotesPage() {
                     return <Note key={note.id} note={note} />;
                 })}
             </div>
+
+            <CreateNote />
         </div>
     );
 }

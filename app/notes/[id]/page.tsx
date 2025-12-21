@@ -1,10 +1,9 @@
 import styles from "../Notes.module.css";
+import PocketBase from "pocketbase";
 
 async function getNote(noteId: string) {
-    const res = await fetch(`http://127.0.0.1:8090/api/collections/notes/records/${noteId}`, {
-        next: { revalidate: 10 },
-    });
-    const data = await res.json();
+    const db = new PocketBase("http://127.0.0.1:8090");
+    const data = await db.collection("notes").getOne(noteId);
     return data;
 }
 
